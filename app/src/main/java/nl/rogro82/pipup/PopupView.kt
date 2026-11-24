@@ -174,11 +174,15 @@ sealed class PopupView(context: Context, val popup: PopupProps) : LinearLayout(c
             super.create()
 
             val frame = findViewById<FrameLayout>(R.id.popup_frame)
-            val webView = WebView(context).apply {
+            webView = WebView(context).apply {
                 with(settings) {
                     loadWithOverviewMode = true
                     useWideViewPort = true
+                    javaScriptEnabled = true
+                    domStorageEnabled = true
+                    mediaPlaybackRequiresUserGesture = false
                 }
+                setBackgroundColor(android.graphics.Color.BLACK)
                 loadUrl(media.uri)
             }
 
@@ -190,6 +194,14 @@ sealed class PopupView(context: Context, val popup: PopupProps) : LinearLayout(c
             }
 
             frame.addView(webView, layoutParams)
+        }
+
+        private lateinit var webView: WebView
+
+        override fun destroy() {
+            try {
+                if (::webView.isInitialized) webView.apply { stopLoading(); loadUrl("about:blank"); removeAllViews(); destroy() }
+            } catch(e: Throwable) {}
         }
     }
 
