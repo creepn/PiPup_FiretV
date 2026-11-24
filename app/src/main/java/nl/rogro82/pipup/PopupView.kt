@@ -61,6 +61,7 @@ sealed class PopupView(context: Context, val popup: PopupProps) : LinearLayout(c
         background = android.graphics.drawable.GradientDrawable().apply {
             setColor(Color.parseColor(popup.backgroundColor))
             cornerRadius = radius
+            if (!popup.borderColor.isNullOrEmpty() && popup.borderWidth > 0) setStroke(popup.borderWidth, Color.parseColor(popup.borderColor))
         }
         outlineProvider = android.view.ViewOutlineProvider.BACKGROUND
         clipToOutline = true
