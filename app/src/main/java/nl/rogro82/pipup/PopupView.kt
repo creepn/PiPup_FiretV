@@ -56,6 +56,22 @@ sealed class PopupView(context: Context, val popup: PopupProps) : LinearLayout(c
             message.setTextColor(Color.parseColor(popup.messageColor))
         }
 
+        // chime (local patch): "chime" plays the bundled ding-dong
+        if (popup.sound == "chime") {
+            try {
+                val mp = android.media.MediaPlayer()
+                mp.setAudioAttributes(android.media.AudioAttributes.Builder()
+                    .setUsage(android.media.AudioAttributes.USAGE_NOTIFICATION_EVENT)
+                    .setContentType(android.media.AudioAttributes.CONTENT_TYPE_SONIFICATION).build())
+                val afd = context.resources.openRawResourceFd(R.raw.chime)
+                mp.setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
+                afd.close()
+                mp.setOnCompletionListener { it.release() }
+                mp.setOnPreparedListener { it.start() }
+                mp.prepareAsync()
+            } catch (e: Throwable) { Log.e("PopupView", "chime failed", e) }
+        }
+
         // rounded corners (local patch)
         val radius = popup.cornerRadius
         background = android.graphics.drawable.GradientDrawable().apply {

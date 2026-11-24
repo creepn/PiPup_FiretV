@@ -16,7 +16,8 @@ data class PopupProps(
     val media: Media? = null,
     val cornerRadius: Float = 24f,
     val borderColor: String? = null,
-    val borderWidth: Int = 4
+    val borderWidth: Int = 4,
+    val sound: String? = null
 ) {
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
