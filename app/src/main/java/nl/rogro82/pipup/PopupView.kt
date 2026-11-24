@@ -56,7 +56,24 @@ sealed class PopupView(context: Context, val popup: PopupProps) : LinearLayout(c
             message.setTextColor(Color.parseColor(popup.messageColor))
         }
 
-        setBackgroundColor(Color.parseColor(popup.backgroundColor))
+        // rounded corners (local patch)
+        val radius = popup.cornerRadius
+        background = android.graphics.drawable.GradientDrawable().apply {
+            setColor(Color.parseColor(popup.backgroundColor))
+            cornerRadius = radius
+        }
+        outlineProvider = android.view.ViewOutlineProvider.BACKGROUND
+        clipToOutline = true
+        if (radius > 0f) {
+            frame?.apply {
+                outlineProvider = object : android.view.ViewOutlineProvider() {
+                    override fun getOutline(view: View, outline: android.graphics.Outline) {
+                        outline.setRoundRect(0, view.paddingTop, view.width, view.height - view.paddingBottom, radius * 0.6f)
+                    }
+                }
+                clipToOutline = true
+            }
+        }
     }
 
     open fun destroy() {}
